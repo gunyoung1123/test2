@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	<context:annotation-config/>
+	
+	<bean id="myPublic" class="ex3.MyPublic"/>
+	<bean id="checkAdvice" class="ex3.CheckAdvice"/>
+	<bean id="afterAdvice" class="ex3.NameReturnAdvice"/>
+	<bean id="afterThrowAdvice" class="ex3.AfterThrowAdvice"/>
+	<bean id="beforeAdivce" class="ex3.TodayBeforeAdvice"/>
+	
+	<!-- Adviser구조 -->
+	<aop:config>
+		<aop:aspect id="time" ref="checkAdvice"><!-- aroundadvise -->
+			<aop:pointcut expression="execution(* ex3.DaoImple.first())" id="first"/>
+			<aop:around method="checkTime" pointcut-ref="first"/>
+		</aop:aspect>
+		
+		<!-- after returning Advice -->
+		<aop:aspect id="afterReturn" ref="afterAdvice">
+			<aop:pointcut expression="execution(* ex3.DaoImple.second())" id="secondP"/>
+			<aop:after-returning method="myReturnMethod" pointcut-ref="secondP" returning="ret"/> 
+		</aop:aspect>
+		
+		<aop:aspect id="afterThrow" ref="afterThrowAdvice">
+			<aop:pointcut expression="execution(* ex3.DaoImple.third())" id="ThirdP"/>
+			<aop:after-throwing method="commThrow" pointcut-ref="ThirdP" throwing="ex"/>
+		</aop:aspect>
+		
+		<aop:aspect id="before" ref="beforeAdivce">
+			<aop:pointcut expression="execution(* ex3.DaoImple.*())" id="befP"/>
+			<aop:before method="beforToday" pointcut-ref="befP"/>
+		</aop:aspect>
+	</aop:config>
+	
+	<!-- target -->
+	<bean id="dao" class="ex3.DaoImple"/>
+</beans>
